@@ -6,7 +6,9 @@ metadata:
   annotations:
     pipelinesascode.tekton.dev/on-event: "push"
     pipelinesascode.tekton.dev/on-target-branch: "pocinfraprpush"
-    pipelinesascode.tekton.dev/max-keep-runs: "5"
+    pipelinesascode.tekton.dev/task: "[.tekton/tasks/infra-deployment-update.yaml]"
+    pipelinesascode.tekton.dev/task-1: "[git-clone]"
+    pipelinesascode.tekton.dev/max-keep-runs: "7"
 spec:
   params:
     - name: git-url
@@ -48,5 +50,4 @@ spec:
           - name: SCRIPT
             value: $(params.infra-deployment-update-script)
         taskRef:
-          bundle: quay.io/redhat-appstudio-tekton-catalog/task-update-infra-deployments:0.1
           name: update-infra-deployments
