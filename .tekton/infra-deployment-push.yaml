@@ -5,7 +5,7 @@ metadata:
   name: pipeline-service-infra-deployment-update
   annotations:
     pipelinesascode.tekton.dev/on-event: "push"
-    pipelinesascode.tekton.dev/on-target-branch: "main"
+    pipelinesascode.tekton.dev/on-target-branch: "pocinfraprpush"
     pipelinesascode.tekton.dev/max-keep-runs: "5"
 spec:
   params:
@@ -18,6 +18,8 @@ spec:
         sed -i -E 's/[0-9a-f]{40}/{{ revision }}/g' components/pipeline-service/development/kustomization.yaml
         sed -i -E 's/[0-9a-f]{40}/{{ revision }}/g' components/pipeline-service/staging/base/kustomization.yaml
         sed -i -E 's/[0-9a-f]{40}/{{ revision }}/g' components/monitoring/grafana/base/dashboards/pipeline-service/kustomization.yaml
+        kustomize build components/pipeline-service/staging/stone-stg-m01/ > components/pipeline-service/staging/stone-stg-m01/deploy.yaml
+        kustomize build components/pipeline-service/staging/stone-stg-rh01/ > components/pipeline-service/staging/stone-stg-rh01/deploy.yaml
   pipelineSpec:
     params:
       - description: 'Source Repository URL'
@@ -33,6 +35,14 @@ spec:
         params:
           - name: ORIGIN_REPO
             value: $(params.git-url)
+          - name: TARGET_GH_REPO
+            value: prietyc123/infra-deployments
+          - name: GITHUB_APP_ID
+            value: "288147"
+          - name: GITHUB_APP_INSTALLATION_ID
+            value: "33726981"
+          - name: SCRIPT_IMAGE
+            value: quay.io/devtools_gitops/test_image:4.0.5
           - name: REVISION
             value: $(params.revision)
           - name: SCRIPT
